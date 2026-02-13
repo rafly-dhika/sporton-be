@@ -9,25 +9,26 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
 
-    // Check if user exists or not
+    // Check if user exist or not
     const user = await User.findOne({ email });
     if (!user) {
-      res.status(400).json({ message: "Invalid Credentials, Email not found" });
+      res
+        .status(400)
+        .json({ message: "Invalid Credentials, Email not Found!" });
       return;
     }
 
-    // Validate Password
+    // Validate password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      res.status(400).json({ message: "Invalid Credentials, wrong password" });
+      res.status(400).json({ message: "Invalid Credentials, Wrong password!" });
       return;
     }
 
-    // Generate JWT (JSON Web Token)
-    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+    // Generate JWT
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
       expiresIn: "1d",
     });
-
     res.json({
       token,
       user: {
@@ -37,8 +38,8 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
       },
     });
   } catch (error) {
-    console.error("Signin Error : ", error);
-    res.status(500).json({ message: "Internal Server  Error" });
+    console.error("Signin Error: ", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -49,7 +50,7 @@ export const initiateAdmin = async (
   try {
     const { email, password, name } = req.body;
 
-    // Check if user data / entry is exist
+    // Check if user data/entry is exist
     const count = await User.countDocuments({});
     if (count > 0) {
       res.status(400).json({
@@ -70,9 +71,9 @@ export const initiateAdmin = async (
 
     await newUser.save();
 
-    res.status(201).json({ message: "Admin user created sucessfully!" });
+    res.status(201).json({ message: "Admin user created successfully!" });
   } catch (error) {
-    console.error("Initiate new admin user error : ", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("Initiate new admin user error: ", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
